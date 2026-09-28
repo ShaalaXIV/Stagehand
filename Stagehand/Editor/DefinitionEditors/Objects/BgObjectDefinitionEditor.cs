@@ -303,7 +303,7 @@ internal class BgObjectDefinitionEditor : ObjectDefinitionEditor<BgObjectDefinit
         }
     }
 
-    private void OnObjectPicked(PickedObjectInfo pickedObject)
+    private void OnObjectPicked(PickedObjectInfo? pickedObject)
     {
         if (pickedObject is PickedBgObjectInfo pickedBgObject)
         {

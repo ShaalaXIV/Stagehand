@@ -134,6 +134,8 @@ public sealed class Plugin : IDalamudPlugin
             services.AddHostedService<LibraryWindow>();
             services.AddSingleton<LocalStageService>();
             services.AddHostedService(c => c.GetRequiredService<LocalStageService>());
+            services.AddSingleton<IQuickPickerWindow, QuickPickerWindow>();
+            services.AddHostedService(services => services.GetRequiredService<IQuickPickerWindow>());
 
             // Editor services are scoped to the editor session
             services.AddScoped<ITransactionManager, TransactionManager>();

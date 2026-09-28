@@ -36,6 +36,10 @@ public interface IStagehandKeybinds
 
     // Picking
     IKeybindAction StopPicking { get; }
+
+    // Quick Picker Window
+    IKeybindAction ToggleQuickPickerWindow { get; }
+    IKeybindAction StartQuickPicking { get; }
 }
 
 internal class StagehandKeybinds : IStagehandKeybinds, IHostedService, IDisposable
@@ -44,6 +48,7 @@ internal class StagehandKeybinds : IStagehandKeybinds, IHostedService, IDisposab
     private const string EditorObjectsGroupName = "Stage Editor (Objects)";
     private const string EditorGroupName = "Stage Editor";
     private const string PickingGroupName = "Picking";
+    private const string QuickPickerGroupName = "Quick Picker";
 
     private readonly IKeybindService _keybindService;
 
@@ -70,6 +75,9 @@ internal class StagehandKeybinds : IStagehandKeybinds, IHostedService, IDisposab
     public IKeybindAction EditorSave { get; }
 
     public IKeybindAction StopPicking { get; }
+
+    public IKeybindAction ToggleQuickPickerWindow { get; }
+    public IKeybindAction StartQuickPicking { get; }
 
     public StagehandKeybinds(IKeybindService keybindService)
     {
@@ -182,6 +190,21 @@ internal class StagehandKeybinds : IStagehandKeybinds, IHostedService, IDisposab
             PickingGroupName,
             "Cancels the current pick-from-world action.",
             new Keybind(VirtualKey.ESCAPE, KeybindModifierKeys.None)));
+
+        //
+        // Quick Picker
+        //
+        ToggleQuickPickerWindow = _keybindService.RegisterAction(new(nameof(ToggleQuickPickerWindow),
+            "Toggle Quick Picker Window",
+            QuickPickerGroupName,
+            "Shows or hides the Quick Picker window.",
+            Keybind.Unassigned));
+
+        StartQuickPicking = _keybindService.RegisterAction(new(nameof(StartQuickPicking),
+            "Start Quick Picking",
+            QuickPickerGroupName,
+            "Shows the Quick Picker window and begins picking.",
+            new Keybind(VirtualKey.P, KeybindModifierKeys.Alt)));
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

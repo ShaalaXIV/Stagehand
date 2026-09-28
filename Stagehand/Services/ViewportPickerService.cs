@@ -41,7 +41,7 @@ public record class PickedVfxObjectInfo(IntPtr OriginalPointer, Vector3 Position
     }
 }
 
-public delegate void ViewportPickerObjectDelegate(PickedObjectInfo pickedObject);
+public delegate void ViewportPickerObjectDelegate(PickedObjectInfo? pickedObject);
 public delegate bool ViewportPickerCancelDelegate();
 
 /// <summary>
@@ -96,8 +96,10 @@ internal class ViewportPickerService : IViewportPickerService
 
     public void CancelPicking()
     {
-        if (Interlocked.Exchange(ref _pickingOperation, null) != null)
+        var operation = Interlocked.Exchange(ref _pickingOperation, null);
+        if (operation != null)
         {
+            operation.ObjectHoverDelegate?.Invoke(null);
             _overlayService.DrawOverlays -= OnDrawOverlays;
             _overlayService.IsPicking = false;
             _stagehandKeybinds.StopPicking.Pressed -= CancelPicking;
@@ -162,6 +164,19 @@ internal class ViewportPickerService : IViewportPickerService
                         CancelPicking();
                     }
                 }
+                else
+                {
+                    pickingOperation.ObjectHoverDelegate?.Invoke(null);
+                    if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+                    {
+                        CancelPicking();
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                pickingOperation.ObjectHoverDelegate?.Invoke(null);
             }
 
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) || ImGui.IsKeyDown(ImGuiKey.Escape) || (pickingOperation.CancelDelegate != null && pickingOperation.CancelDelegate.Invoke()))

@@ -52,6 +52,7 @@ public class ConfigWindow : Window, IConfigWindow, IDisposable
     void IConfigWindow.Show()
     {
         IsOpen = true;
+        RequestFocus = true;
     }
 
     public void Dispose() { }

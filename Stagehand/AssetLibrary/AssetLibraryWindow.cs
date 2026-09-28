@@ -61,6 +61,20 @@ public interface IAssetLibraryWindow : IHostedService
     void Hide();
 
     /// <summary>
+    /// Selects the game resource with the given path in the game resources tab, if it exists.
+    /// </summary>
+    /// <param name="resourceGamePath">The game path of the resource to select.</param>
+    /// <returns>Whether the resource was found and selected.</returns>
+    bool TrySelectGameResource(string resourceGamePath);
+
+    /// <summary>
+    /// Selects the game folder with the given path in the game resources tab, if it exists.
+    /// </summary>
+    /// <param name="folderGamePath">The game path of the folder to select.</param>
+    /// <returns>Whether the resource was found and selected.</returns>
+    bool TrySelectGameFolder(string folderGamePath);
+
+    /// <summary>
     /// Sets the callback to use for assigning an asset from the Asset Library window.
     /// </summary>
     /// <typeparam name="TAssetInfo">The type of asset info that can be selected.</typeparam>
@@ -221,24 +235,44 @@ internal partial class AssetLibraryWindow : Window, IAssetLibraryWindow
         LoadHousingNodes();
     }
 
-    private void OnGameResourceBookmarkDoubleClicked(IGameResourceBookmarkItem obj)
+    public bool TrySelectGameResource(string resourceGamePath)
     {
-        if (_gameResourceAssetService.TryGetResource(obj.ResourceGamePath, out var resource))
+        if (_gameResourceAssetService.TryGetResource(resourceGamePath, out var resource))
         {
             _selectedDataTab = _dataTabs[0];
             _gameResourceTreeView.ExpandItem(resource);
             _gameResourceTreeView.SelectedItem = resource;
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
-    private void OnGameFolderBookmarkDoubleClicked(IGameFolderBookmarkItem obj)
+    public bool TrySelectGameFolder(string folderGamePath)
     {
-        if (_gameResourceAssetService.TryGetFolder(obj.FolderGamePath, out var folder))
+        if (_gameResourceAssetService.TryGetFolder(folderGamePath, out var folder))
         {
             _selectedDataTab = _dataTabs[0];
             _gameResourceTreeView.ExpandItem(folder);
             _gameResourceTreeView.SelectedItem = folder;
+            return true;
         }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void OnGameResourceBookmarkDoubleClicked(IGameResourceBookmarkItem obj)
+    {
+        TrySelectGameResource(obj.ResourceGamePath);
+    }
+
+    private void OnGameFolderBookmarkDoubleClicked(IGameFolderBookmarkItem obj)
+    {
+        TrySelectGameFolder(obj.FolderGamePath);
     }
 
     public void Show()
